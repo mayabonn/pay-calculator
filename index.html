@@ -211,7 +211,7 @@
   const BREAK_HOURS    = 0.5;
 
   let entries = [];
-  try { entries = JSON.parse(localStorage.getItem('pay_entries') || '[]'); } catch(e) {}
+  try { const raw = JSON.parse(localStorage.getItem('pay_entries') || '[]'); entries = raw.filter(e => e && e.shifts && Array.isArray(e.shifts)); } catch(e) {}
 
   document.getElementById('inp-date').value = new Date().toISOString().split('T')[0];
 
