@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pay Calculator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f4f4f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    .app {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #1a1a1a;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #e5e5e0;
+      padding: 1.1rem 1.25rem;
+      margin-bottom: 14px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 10px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .field label {
+      font-size: 12px;
+      color: #666;
+    }
+
+    input[type="date"],
+    input[type="number"] {
+      width: 100%;
+      height: 40px;
+      border: 1px solid #ddd;
+      border-radius: 9px;
+      padding: 0 10px;
+      font-size: 15px;
+      background: #fafafa;
+      color: #1a1a1a;
+      outline: none;
+    }
+
+    input[type="date"]:focus,
+    input[type="number"]:focus {
+      border-color: #999;
+      background: #fff;
+    }
+
+    .add-btn {
+      height: 40px;
+      padding: 0 18px;
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-size: 15px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    .add-btn:active { opacity: 0.8; }
+
+    .hint {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 6px;
+    }
+
+    .month-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .month-sub {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 12px;
+    }
+
+    .empty-msg {
+      text-align: center;
+      color: #bbb;
+      font-size: 14px;
+      padding: 18px 0 6px;
+    }
+
+    .entry-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 0;
+      border-bottom: 1px solid #f0f0ec;
+      font-size: 14px;
+    }
+
+    .entry-row:last-child { border-bottom: none; }
+
+    .entry-date {
+      font-size: 13px;
+      color: #666;
+      min-width: 94px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 5px;
+    }
+
+    .badge-weekday { background: #e8f0fe; color: #3367d6; }
+    .badge-saturday { background: #fff3e0; color: #e65100; }
+
+    .entry-hours { flex: 1; color: #444; }
+
+    .entry-pay {
+      font-weight: 600;
+      color: #1a1a1a;
+      min-width: 60px;
+      text-align: right;
+    }
+
+    .del-btn {
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: #ccc;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0 2px;
+    }
+
+    .del-btn:hover { color: #e53935; }
+
+    hr { border: none; border-top: 1px solid #f0f0ec; margin: 12px 0; }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .metric {
+      background: #f7f7f3;
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .total-block {
+      background: #1a1a1a;
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .total-label { font-size: 13px; color: #aaa; }
+    .total-value { font-size: 24px; font-weight: 700; color: #fff; }
+
+    .clear-btn {
+      width: 100%;
+      background: none;
+      border: 1px solid #e5e5e0;
+      border-radius: 9px;
+      padding: 9px;
+      font-size: 13px;
+      color: #aaa;
+      cursor: pointer;
+    }
+
+    .clear-btn:hover { color: #e53935; border-color: #e53935; }
+
+    @media (prefers-color-scheme: dark) {
+      body { background: #141414; color: #f0f0f0; }
+      .card { background: #1e1e1e; border-color: #2e2e2e; }
+      h1 { color: #f0f0f0; }
+      input[type="date"], input[type="number"] { background: #2a2a2a; border-color: #3a3a3a; color: #f0f0f0; }
+      input[type="date"]:focus, input[type="number"]:focus { background: #2e2e2e; border-color: #666; }
+      .add-btn { background: #f0f0f0; color: #1a1a1a; }
+      .entry-row { border-color: #2a2a2a; }
+      .metric { background: #252525; }
+      .metric-value { color: #f0f0f0; }
+      hr { border-color: #2a2a2a; }
+      .clear-btn { border-color: #2e2e2e; }
+      .entry-date { color: #aaa; }
+      .entry-hours { color: #ccc; }
+      .entry-pay { color: #f0f0f0; }
+      .badge-weekday { background: #1a2a4a; color: #7aabff; }
+      .badge-saturday { background: #2a1a00; color: #ffaa44; }
+      .total-block { background: #f0f0f0; }
+      .total-label { color: #888; }
+      .total-value { color: #1a1a1a; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Pay Calculator</h1>
+    <p class="subtitle">30 min break deducted automatically each day</p>
+
+    <div class="card">
+      <div class="section-label">Add a work day</div>
+      <div class="input-row">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="inp-date" />
+        </div>
+        <div class="field" style="max-width: 110px;">
+          <label>Shift hours</label>
+          <input type="number" id="inp-hours" min="0" max="24" step="0.5" placeholder="e.g. 9" />
+        </div>
+        <button class="add-btn" onclick="addEntry()">+ Add</button>
+      </div>
+      <p class="hint">Enter total hours on shift — break is deducted for you</p>
+    </div>
+
+    <div class="card" id="results-card">
+      <div id="month-title" class="month-title" style="display:none;"></div>
+      <div id="month-sub" class="month-sub" style="display:none;"></div>
+
+      <div id="entries-list">
+        <p class="empty-msg">No entries yet — add a work day above</p>
+      </div>
+
+      <div id="summary-section" style="display:none;">
+        <hr />
+        <div class="summary-grid">
+          <div class="metric">
+            <div class="metric-label">Regular hours</div>
+            <div class="metric-value" id="s-reg-hrs">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Overtime hours</div>
+            <div class="metric-value" id="s-ot-hrs">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Regular pay</div>
+            <div class="metric-value" id="s-reg-pay">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Overtime pay</div>
+            <div class="metric-value" id="s-ot-pay">—</div>
+          </div>
+        </div>
+        <div class="total-block">
+          <span class="total-label">Total pay this month</span>
+          <span class="total-value" id="s-total">€0.00</span>
+        </div>
+        <button class="clear-btn" onclick="clearAll()">Clear all entries</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const WEEKDAY_RATE   = 10.00;
+    const SATURDAY_RATE  = 13.00;
+    const OVERTIME_RATE  = 13.00;
+    const OVERTIME_LIMIT = 8.0;
+    const BREAK_HOURS    = 0.5;
+
+    let entries = [];
+    try { entries = JSON.parse(localStorage.getItem('pay_entries') || '[]'); } catch(e) {}
+
+    function save() {
+      try { localStorage.setItem('pay_entries', JSON.stringify(entries)); } catch(e) {}
+    }
+
+    function dayType(dateStr) {
+      const d = new Date(dateStr + 'T12:00:00');
+      return d.getDay() === 6 ? 'Saturday' : 'Weekday';
+    }
+
+    function calcRow(hours, type) {
+      const net = Math.max(hours - BREAK_HOURS, 0);
+      if (type === 'Saturday') {
+        return { net, regHrs: net, otHrs: 0, regPay: net * SATURDAY_RATE, otPay: 0, total: net * SATURDAY_RATE };
+      }
+      const regHrs = Math.min(net, OVERTIME_LIMIT);
+      const otHrs  = Math.max(net - OVERTIME_LIMIT, 0);
+      return { net, regHrs, otHrs, regPay: regHrs * WEEKDAY_RATE, otPay: otHrs * OVERTIME_RATE, total: regHrs * WEEKDAY_RATE + otHrs * OVERTIME_RATE };
+    }
+
+    function fmt(n)  { return '€' + n.toFixed(2); }
+    function fmtH(n) { return n.toFixed(1) + ' h'; }
+
+    function formatDate(dateStr) {
+      return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function render() {
+      const list    = document.getElementById('entries-list');
+      const summary = document.getElementById('summary-section');
+      const mtitle  = document.getElementById('month-title');
+      const msub    = document.getElementById('month-sub');
+
+      if (entries.length === 0) {
+        list.innerHTML = '<p class="empty-msg">No entries yet — add a work day above</p>';
+        summary.style.display = 'none';
+        mtitle.style.display  = 'none';
+        msub.style.display    = 'none';
+        return;
+      }
+
+      const sorted = [...entries].sort((a, b) => a.date.localeCompare(b.date));
+      const wdays  = sorted.filter(e => dayType(e.date) === 'Weekday').length;
+      const sdays  = sorted.filter(e => dayType(e.date) === 'Saturday').length;
+
+      mtitle.style.display = 'block';
+      msub.style.display   = 'block';
+      mtitle.textContent   = new Date(sorted[0].date + 'T12:00:00').toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+      msub.textContent     = `${sorted.length} day${sorted.length > 1 ? 's' : ''} worked  ·  ${wdays} weekday${wdays !== 1 ? 's' : ''}  ·  ${sdays} Saturday${sdays !== 1 ? 's' : ''}`;
+
+      list.innerHTML = sorted.map(e => {
+        const type = dayType(e.date);
+        const c    = calcRow(e.hours, type);
+        const idx  = entries.findIndex(x => x.date === e.date);
+        return `<div class="entry-row">
+          <span class="entry-date">${formatDate(e.date)}</span>
+          <span class="badge ${type === 'Saturday' ? 'badge-saturday' : 'badge-weekday'}">${type}</span>
+          <span class="entry-hours">${fmtH(c.net)}</span>
+          <span class="entry-pay">${fmt(c.total)}</span>
+          <button class="del-btn" onclick="removeEntry(${idx})">×</button>
+        </div>`;
+      }).join('');
+
+      let totReg = 0, totOT = 0, totRegPay = 0, totOTPay = 0, totTotal = 0;
+      entries.forEach(e => {
+        const c = calcRow(e.hours, dayType(e.date));
+        totReg    += c.regHrs;
+        totOT     += c.otHrs;
+        totRegPay += c.regPay;
+        totOTPay  += c.otPay;
+        totTotal  += c.total;
+      });
+
+      document.getElementById('s-reg-hrs').textContent = fmtH(totReg);
+      document.getElementById('s-ot-hrs').textContent  = fmtH(totOT);
+      document.getElementById('s-reg-pay').textContent = fmt(totRegPay);
+      document.getElementById('s-ot-pay').textContent  = fmt(totOTPay);
+      document.getElementById('s-total').textContent   = fmt(totTotal);
+      summary.style.display = 'block';
+    }
+
+    function addEntry() {
+      const dateEl  = document.getElementById('inp-date');
+      const hoursEl = document.getElementById('inp-hours');
+      const date    = dateEl.value;
+      const hours   = parseFloat(hoursEl.value);
+
+      if (!date)                          { alert('Please pick a date.');           return; }
+      if (isNaN(hours) || hours <= 0)     { alert('Please enter valid hours.');     return; }
+      if (new Date(date + 'T12:00:00').getDay() === 0) { alert('Sundays are not counted as work days.'); return; }
+      if (entries.find(e => e.date === date)) { alert('Date already added. Remove it first to update.'); return; }
+
+      entries.push({ date, hours });
+      save();
+      dateEl.value  = '';
+      hoursEl.value = '';
+      render();
+    }
+
+    function removeEntry(idx) {
+      entries.splice(idx, 1);
+      save();
+      render();
+    }
+
+    function clearAll() {
+      if (confirm('Clear all entries?')) {
+        entries = [];
+        save();
+        render();
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>
